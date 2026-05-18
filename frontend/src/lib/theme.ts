@@ -5,9 +5,12 @@
  * module. Components must import named constants here rather than spell out
  * Tailwind utility strings or hex values inline. See spec §4.2.
  *
- * `STATE_PILL_CLASSES` and `STATE_ICON` are added in Slice 002, once
- * `ResultKind` is defined in `lib/wire.ts`.
+ * `STATE_PILL_CLASSES` and `STATE_ICON` (added in Slice 002) live at the
+ * bottom of this file — they require `ResultKind` from `lib/wire.ts`.
  */
+
+import { AlertTriangle, Check, Clock, type LucideIcon } from "lucide-react";
+import type { ResultKind } from "./wire";
 
 export const SURFACE = {
   appBg: "bg-slate-950",
@@ -117,3 +120,28 @@ export const PILL = {
   base:
     "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium uppercase tracking-wide",
 } as const;
+
+/**
+ * Per-`ResultKind` pill classes. Each value is a complete utility-class
+ * string (literal substring) so Tailwind's content scanner retains the
+ * classes in the production CSS bundle.
+ *
+ * MATCH/MISMATCH/ORPHAN use solid backgrounds per spec §4.4 — these are
+ * the one place in the UI where color is loud, intentionally.
+ */
+export const STATE_PILL_CLASSES: Record<ResultKind, string> = {
+  MATCH: "bg-emerald-500 text-white",
+  MISMATCH: "bg-rose-600 text-white",
+  ORPHAN: "bg-amber-500 text-black",
+};
+
+/**
+ * Per-`ResultKind` icon mapping. Color is never the sole signal — every
+ * pill pairs the color class above with one of these icons and a textual
+ * label (spec §4.6 a11y).
+ */
+export const STATE_ICON: Record<ResultKind, LucideIcon> = {
+  MATCH: Check,
+  MISMATCH: AlertTriangle,
+  ORPHAN: Clock,
+};
