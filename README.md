@@ -18,19 +18,16 @@ Traditional API diffing tools expect static payloads and fail when testing conti
 
 ## Getting Started
 
-### Run with Docker
+### Run with Docker Compose (recommended)
 
 ```bash
-docker build --build-arg VERSION=$(git describe --always --dirty) -t ssediff .
-docker run --rm -p 8080:8080 ssediff
-# open http://localhost:8080
+make up
+# → http://localhost:8080  (API + UI in one container)
+
+make down   # stop and remove containers before re-running
 ```
 
-### Run with Docker Compose
-
-```bash
-docker compose up --build
-```
+`make up` always runs `make down` first so you get a clean rebuild and restart.
 
 ### Run from source (single binary)
 
@@ -42,13 +39,12 @@ make run   # builds backend, syncs frontend/dist → ./public, listens on :8080
 ### Run from source (dev — hot reload)
 
 ```bash
-# Terminal 1 — backend
-make build && ./bin/ssediff
-
-# Terminal 2 — frontend (proxies /api + /ws to :8080)
-cd frontend && npm install && npm run dev
-# open http://localhost:5173
+make dev
+# backend → http://localhost:8080
+# open UI  → http://localhost:5173  (Vite proxies /api and /ws)
 ```
+
+Press `Ctrl+C` to stop both servers.
 
 ## Configuration
 

@@ -1,26 +1,32 @@
+# ssediff — full stack in one service.
+#
+# The image bundles the Go API (SSE ingestion, matcher, WebSocket hub) and the
+# production-built React UI (served from /app/public by the same process).
+# Open http://localhost:8080 after `make up`.
+
 services:
   ssediff:
     build:
       context: .
+      dockerfile: Dockerfile
       args:
-        # Override at build time, e.g. `docker compose build --build-arg VERSION=$(git describe --always --dirty)`.
-        VERSION: dev
+        VERSION: ${VERSION:-dev}
     image: ssediff:local
+    container_name: ssediff
     ports:
       - "8080:8080"
     environment:
       PORT: "8080"
       BUFFER_TTL_MS: "30000"
       LOG_LEVEL: "INFO"
-      # Set ALLOW_PRIVATE_TARGETS=true *only* in a sandboxed lab where
-      # the upstream SSE endpoints are intentionally on the loopback /
-      # private RFC1918 ranges. See spec §3.6.
-      # ALLOW_PRIVATE_TARGETS: "false"
+      PUBLIC_DIR: "/app/public"
+      # ALLOW_PRIVATE_TARGETS: "true"   # lab only — see spec §3.6
+      # INSECURE_SKIP_VERIFY: "true"    # lab only
     read_only: true
     cap_drop:
       - ALL
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges: true
     restart: unless-stopped
     logging:
       driver: json-file
@@ -32,4 +38,4 @@ services:
       interval: 30s
       timeout: 3s
       retries: 3
-      start_period: 5s
+      start_period: 10s
