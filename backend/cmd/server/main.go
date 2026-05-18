@@ -19,6 +19,10 @@ import (
 	"time"
 )
 
+// redactedAuthorization is the literal value substituted in log output
+// anywhere an "Authorization" attribute appears (spec §3.6).
+const redactedAuthorization = "[REDACTED]"
+
 // version is overridden at build time via -ldflags "-X main.version=...".
 // It is reported in /api/health so operators can distinguish builds.
 var version = "dev"
@@ -42,7 +46,10 @@ func main() {
 		os.Exit(2)
 	}
 
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: cfg.LogLevel}))
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level:       cfg.LogLevel,
+		ReplaceAttr: redactSensitiveAttrs,
+	}))
 	slog.SetDefault(logger)
 	logger.Info("starting ssediff",
 		"version", version,
@@ -87,6 +94,16 @@ func loadConfig() (Config, error) {
 		cfg.LogLevel = level
 	}
 	return cfg, nil
+}
+
+// redactSensitiveAttrs is a slog.ReplaceAttr that scrubs known-sensitive
+// attribute values before they're emitted by the JSON handler. Currently
+// matches "Authorization" case-insensitively (spec §3.6).
+func redactSensitiveAttrs(_ []string, a slog.Attr) slog.Attr {
+	if strings.EqualFold(a.Key, "authorization") {
+		return slog.String(a.Key, redactedAuthorization)
+	}
+	return a
 }
 
 // parseLogLevel turns a case-insensitive string into a slog.Level. It rejects
