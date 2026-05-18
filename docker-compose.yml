@@ -1,0 +1,10 @@
+services:
+  ssediff:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      BUFFER_TTL_MS: "30000"
+      LOG_LEVEL: "INFO"
+    restart: unless-stopped

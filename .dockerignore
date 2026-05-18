@@ -1,0 +1,21 @@
+# Build outputs that must not enter the Docker context.
+bin/
+backend/cmd/server/server
+frontend/dist/
+frontend/node_modules/
+
+# VCS / iteration trail / editor state.
+.git/
+.gitignore
+.github/
+iterations/
+*.md
+!frontend/**/*.md
+.idea/
+.vscode/
+.DS_Store
+*.swp
+
+# Local env overrides — never leak into images.
+.env
+.env.local

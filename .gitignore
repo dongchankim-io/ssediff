@@ -1,0 +1,18 @@
+## Build outputs
+bin/
+backend/server
+backend/cmd/server/server
+frontend/dist/
+
+## Dependencies
+frontend/node_modules/
+
+## Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+## Local env overrides
+.env
+.env.local
