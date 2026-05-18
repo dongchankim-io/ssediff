@@ -233,9 +233,22 @@ func runUntilSignal(
 	return shutdownInOrder(server, sessions, matcher, stopHub, hubWG, logger)
 }
 
-// shutdownInOrder performs the spec §3.4 shutdown sequence with bounded
-// timeouts at each step. Failures are logged but don't short-circuit
-// later steps — we want every cleanup phase to run.
+// shutdownInOrder performs graceful shutdown after SIGINT/SIGTERM.
+//
+// Order is derived from ssediff-spec §3.4 (`http.Server.Shutdown`, then tear
+// down broadcast + engine) extended with SessionController.Stop:
+//
+//  1. Stop accepting HTTP/WSS upgrades (sessions still running).
+//  2. Stop upstream SSE ingestion (SessionController.Stop) — no more Ingest.
+//  3. Close the matcher → closes Results channel → Hub.Run exits cleanly
+//     after draining in-flight broadcasts (implements the spec's “stop consuming
+//     results before closing matcher” invariant without risking a deadlock).
+//  4. Cancel the hub ctx and WaitGroup for goroutine bookkeeping.
+//
+// This differs from the spec's three-bullet shorthand (Hub before Matcher): the
+// matcher must Close while the Hub is still reading Results() so Goroutine drains
+// can complete. Sessions stop **before** Close so matchers never ingest after SSE
+// teardown.
 func shutdownInOrder(
 	server *http.Server,
 	sessions *api.SessionController,

@@ -1,4 +1,4 @@
-.PHONY: lint build run tidy clean
+.PHONY: lint build run sync-public tidy clean
 
 # Version is injected into the Go binary via ldflags so /api/health reports
 # the actual git revision instead of the package-default "dev" value.
@@ -23,7 +23,13 @@ lint:
 build:
 	cd backend && CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o ../bin/ssediff ./cmd/server
 
-run: build
+# Copies the Vite production bundle into ./public for local `make run`.
+sync-public:
+	cd frontend && npm run build
+	rm -rf public && mkdir -p public
+	cp -R frontend/dist/. public/
+
+run: build sync-public
 	./bin/ssediff
 
 tidy:

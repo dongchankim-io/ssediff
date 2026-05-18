@@ -3,6 +3,7 @@ bin/
 backend/server
 backend/cmd/server/server
 frontend/dist/
+public/
 
 ## Dependencies
 frontend/node_modules/

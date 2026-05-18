@@ -16,7 +16,15 @@ export const SURFACE = {
   appBg: "bg-slate-950",
   cardBg: "bg-slate-900",
   cardBorder: "border border-slate-800",
+  /** Idle row hover state — paired with `rowHoverClass` for interactive rows. */
   rowHover: "bg-slate-800/60",
+  /**
+   * Literal `hover:bg-slate-800/60`. Provided as a complete class string
+   * because Tailwind's content scanner only retains classes that appear
+   * literally in source — template interpolation (`` `hover:${x}` ``)
+   * would silently drop the class in production CSS.
+   */
+  rowHoverClass: "hover:bg-slate-800/60",
   rowSelected: "bg-slate-800 ring-1 ring-indigo-500/40",
   divider: "border-slate-800",
 } as const;
