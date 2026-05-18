@@ -59,7 +59,9 @@ export function App(): JSX.Element {
   }, [stream.status, sessionStatus]);
 
   return (
-    <div className={`flex h-screen w-screen flex-col ${SURFACE.appBg} ${TEXT.primary}`}>
+    <div
+      className={`flex h-screen w-screen flex-col overflow-hidden ${SURFACE.appBg} ${TEXT.primary}`}
+    >
       <StatusHeader
         wsStatus={stream.status}
         nextReconnectAt={stream.nextReconnectAt}
@@ -69,13 +71,19 @@ export function App(): JSX.Element {
         preferences={preferences}
         onPreferencesChange={setPreferences}
       />
-      {showOnboarding ? <OnboardingCard onDismiss={dismissOnboarding} /> : null}
-      <ConfigBar
-        sessionStatus={sessionStatus}
-        onSessionStarted={() => setSessionStatus("live")}
-        onSessionStopped={() => setSessionStatus("stopped")}
-      />
-      <main className="flex-1 min-h-0">
+      {showOnboarding ? (
+        <div className="shrink-0">
+          <OnboardingCard onDismiss={dismissOnboarding} />
+        </div>
+      ) : null}
+      <div className="shrink-0 max-h-[min(50vh,28rem)] overflow-y-auto border-b border-slate-800">
+        <ConfigBar
+          sessionStatus={sessionStatus}
+          onSessionStarted={() => setSessionStatus("live")}
+          onSessionStopped={() => setSessionStatus("stopped")}
+        />
+      </div>
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <SplitPane
           leftWidth={ledgerWidth}
           onLeftWidthChange={setLedgerWidth}

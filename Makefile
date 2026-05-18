@@ -74,7 +74,7 @@ dev: ## Run backend + frontend locally; Ctrl+C stops both
 	@echo ""
 	@test -d frontend/node_modules || (echo "Installing frontend dependencies…" && cd frontend && npm ci)
 	@trap 'kill 0' INT TERM; \
-		( cd backend && CGO_ENABLED=0 go run -ldflags "$(LDFLAGS)" ./cmd/server ) & \
+		( cd backend && PUBLIC_DIR=../public CGO_ENABLED=0 go run -ldflags "$(LDFLAGS)" ./cmd/server ) & \
 		( cd frontend && npm run dev ) & \
 		wait
 
