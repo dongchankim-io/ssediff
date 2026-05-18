@@ -61,7 +61,13 @@ up: down ## Stop old stack, rebuild, run API + UI in Docker on :8080
 	@echo "Building ssediff image (frontend + backend)…"
 	@VERSION=$(VERSION) $(COMPOSE) build --build-arg VERSION=$(VERSION)
 	@echo ""
-	@echo "Starting stack — open http://localhost:8080"
+	@echo "Starting stack — URLs (Docker, port 8080):"
+	@echo "  App (UI)     http://localhost:8080"
+	@echo "  Health       http://localhost:8080/api/health"
+	@echo "  Stats        http://localhost:8080/api/stats"
+	@echo "  WebSocket    ws://localhost:8080/ws"
+	@echo ""
+	@echo "Open http://localhost:8080 in your browser."
 	@echo "Logs below. Ctrl+C stops containers; run 'make down' before the next 'make up'."
 	@echo ""
 	@VERSION=$(VERSION) $(COMPOSE) up
